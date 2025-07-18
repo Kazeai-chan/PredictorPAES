@@ -40,6 +40,30 @@ def get_colegios(comuna):
     lista_colegios = colegios_filtrados['NOMBRE_UNIDAD_EDUC'].drop_duplicates().tolist()
     return jsonify(lista_colegios)
 
+@app.route('/top_7_comunas')
+def top_7_comunas():
+    # Filtra nulos
+    df_filtrado = df_datos.dropna(subset=['NOMBRE_COMUNA_EGRESO', 'PROMEDIO_CM_MAX'])
+
+    # Agrupa por comuna y obtiene el promedio del puntaje
+    top_comunas = df_filtrado.groupby('NOMBRE_COMUNA_EGRESO')['PROMEDIO_CM_MAX'].mean()
+
+    # Ordena de mayor a menor y toma las 7 primeras
+    top_comunas = top_comunas.sort_values(ascending=False).head(7).reset_index()
+
+    # Asegura tipo de datos correcto
+    top_comunas['PROMEDIO_CM_MAX'] = top_comunas['PROMEDIO_CM_MAX'].astype(float)
+    top_comunas['NOMBRE_COMUNA_EGRESO'] = top_comunas['NOMBRE_COMUNA_EGRESO'].astype(str)
+
+    # Prepara respuesta JSON
+    response = {
+        'comunas': top_comunas['NOMBRE_COMUNA_EGRESO'].tolist(),
+        'puntajes': top_comunas['PROMEDIO_CM_MAX'].tolist()
+    }
+
+    return jsonify(response)
+
+
 
 @app.route('/predict', methods=['POST'])
 def predict():

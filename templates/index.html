@@ -124,6 +124,102 @@
             </div>
 
         </div> <!-- Fin del nuevo contenedor de cuadrícula -->
+        <!-- Nueva sección de Análisis de Datos PAES 2024 -->
+        <section id="analysis-section" class="mt-12 max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl md:text-3xl font-bold text-[#264653] mb-6 text-center">Análisis de Datos PAES 2024</h2>
+            <!-- Video de YouTube -->
+            <div class="relative w-full overflow-hidden rounded-lg mb-8" style="padding-top: 56.25%;">
+                <iframe
+                    class="absolute top-0 left-0 w-full h-full"
+                    src="https://www.youtube.com/embed/WDqqLCoPHdM?autoplay=0&controls=1&showinfo=0&rel=0"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
+            </div>
+
+            <div class="text-slate-700 space-y-4 mb-8">
+                <p>El rendimiento en la PAES es un factor crucial para el ingreso universitario, reflejando el esfuerzo y la dedicación académica de los estudiantes. Sin embargo, un análisis más profundo de los datos revela que el puntaje obtenido no es el único determinante del éxito.</p>
+                <p>Factores como el **lugar donde se estudió** (la comuna y el tipo de colegio) y el **entorno socioeconómico** en el que se desarrolló el estudiante, continúan ejerciendo una influencia significativa. Estos elementos pueden impactar el acceso a recursos educativos, la calidad de la enseñanza, y las oportunidades de preparación adicional.</p>
+                <p>Este análisis busca ilustrar cómo, a pesar de la importancia del mérito individual, las condiciones estructurales aún marcan el camino y generan disparidades en los resultados. Es fundamental considerar estos contextos para una comprensión completa del panorama de ingreso a la educación superior.</p>
+            </div>
+
+            <!-- Div para el gráfico de las 7 comunas con mejores puntajes -->
+            <div id="grafico_top_7_comunas" class="min-h-[400px]"></div>
+        </section>
+        <!-- Sección de Insights del Modelo Apriori -->
+        <section class="mt-8 max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl md:text-3xl font-bold text-[#264653] mb-6 text-center">Insights del Modelo Apriori</h2>
+            <img src="{{ url_for('static', filename='img/apriori.png') }}" alt="Diagrama o representación visual del modelo Apriori" class="w-full h-auto rounded-lg mb-4 mx-auto block">
+            <div class="text-slate-700 space-y-4">
+                <p>El algoritmo Apriori es útil para descubrir asociaciones o reglas de asociación en grandes conjuntos de datos. En el contexto de los resultados PAES, nos permite identificar patrones de comportamiento entre las distintas pruebas y el ingreso universitario:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>Bajo rendimiento en Lenguaje y Ciencias:</strong> Los estudiantes con bajo rendimiento en la prueba de Lenguaje tienen una alta probabilidad de obtener también bajo puntaje en Ciencias.</li>
+                    <li><strong>Rendimiento medio y no ingreso:</strong> Un desempeño medio en las pruebas de Matemática y Ciencias, junto con una nota media escolar también en nivel medio, está fuertemente asociado a no haber ingresado a la universidad.</li>
+                    <li><strong>Lenguaje medio y Matemática media (no ingreso):</strong> Cuando los estudiantes muestran un rendimiento medio en Lenguaje y además no ingresaron a la universidad, frecuentemente también tienen resultados medios en Matemática.</li>
+                    <li><strong>Perfiles de no ingreso:</strong> En general, los estudiantes que tienen rendimientos medios en la mayoría de las pruebas, sin destacar ni caer en extremos, tienden a repetirse en los perfiles que no lograron el ingreso a la universidad.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Sección de Insights del Modelo de Regresión Lineal -->
+        <section class="mt-8 max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl md:text-3xl font-bold text-[#264653] mb-6 text-center">Insights del Modelo de Regresión Lineal</h2>
+            <img src="{{ url_for('static', filename='img/regresion.png') }}" alt="Gráfico de dispersión o línea de regresión" class="w-full h-auto rounded-lg mb-4 mx-auto block">
+            <div class="text-slate-700 space-y-4">
+                <p>La regresión lineal nos ayuda a entender la relación entre una variable dependiente (Puntaje Ponderado) y una o más variables independientes. Sus insights clave son:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>Mejor predictor:</strong> El mejor predictor del Puntaje Ponderado es el puntaje promedio comunal máximo del colegio de origen del estudiante. Esto subraya la importancia del entorno educativo local.</li>
+                    <li><strong>Influencia de Matemática:</strong> El puntaje en Matemática tiene una fuerte asociación con el Puntaje Ponderado, indicando su peso significativo en el cálculo final.</li>
+                    <li><strong>Influencia de Lenguaje:</strong> Lenguaje también muestra una influencia relevante, reforzando la importancia de estas dos pruebas centrales.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Sección de Insights del Modelo Naive Bayes -->
+        <section class="mt-8 max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl md:text-3xl font-bold text-[#264653] mb-6 text-center">Insights del Modelo Naive Bayes</h2>
+            <img src="{{ url_for('static', filename='img/bayesian.png') }}" alt="Representación de probabilidades o diagramas de Bayes" class="w-full h-auto rounded-lg mb-4 mx-auto block">
+            <div class="text-slate-700 space-y-4">
+                <p>El clasificador Naive Bayes es un algoritmo probabilístico que se utiliza para tareas de clasificación. En nuestro caso, nos permite predecir la probabilidad de ingreso a la universidad basándose en los puntajes y notas:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>Puntaje y notas no son lo único:</strong> El puntaje y notas no es lo único que importa para ingresar a la universidad. Considerando que si entrenamos el Naive Bayes solo con puntajes y notas y revisamos si entró a la universidad, obtenemos un accuracy solo de 72% que a pesar de ser alto, no es muy alto lo que nos indica que hay otras variables que deben estar influyendo en el ingreso.</li>
+                    <li><strong>Ciencias o Historia por sí solas no aseguran ingreso:</strong> Obtener un buen puntaje en sólo en ciencias o en historia no asegura un ingreso a la universidad. A pesar de que intentamos subir uno de ambos puntajes la predicción sigue siendo falsa, por lo que si a un alumno le va bien en sólo una de estas dos pruebas, no le asegura que entrará en la universidad.</li>
+                    <li><strong>Lenguaje y Matemática son clave:</strong> Si te va bien en lenguaje y matemáticas (actualizando el promedio) es más probable ingresar a la universidad. Al predecir aumentando sólo los puntajes de lenguaje y matemáticas y con ello aumentando el ponderado, da más posibilidad de ingresar a la universidad que si se sube en sólo uno, a pesar de que no se suba el puntaje en la de historia o ciencias.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Insights del Modelo Árbol de Decisión -->
+        <section class="mt-8 max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl md:text-3xl font-bold text-[#264653] mb-6 text-center">Insights del Modelo Árbol de Decisión</h2>
+            <img src="{{ url_for('static', filename='img/arbol.png') }}" alt="Diagrama de un árbol de decisión" class="w-full h-auto rounded-lg mb-4 mx-auto block">
+            <div class="text-slate-700 space-y-4">
+                <p>Los árboles de decisión son modelos intuitivos que nos ayudan a visualizar las decisiones y sus posibles resultados. En el análisis de la PAES, revelan:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Rendimiento escolar y diferencias regionales:</strong> Buen rendimiento escolar marca diferencias regionales: Los estudiantes con mejores notas y puntajes tienden a concentrarse en ciertas regiones, lo que refleja desigualdad en el acceso a educación de calidad según la zona del país.</li>
+                        <li><strong>Puntaje y ingreso familiar:</strong> Más puntaje, mayor ingreso familiar: A mayor puntaje promedio en asignaturas, mayor es el ingreso per cápita del grupo familiar, lo que indica una fuerte relación entre desempeño escolar y nivel socioeconómico.</li>
+                        <li><strong>Rendimiento y realidades socioeconómicas:</strong> Mismo rendimiento, distintas realidades: Los mismos niveles de rendimiento explican tanto la región de origen como el ingreso familiar, revelando una estructura social desigual basada en el desempeño escolar.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Insights del Modelo Clustering -->
+        <section class="mt-8 max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl md:text-3xl font-bold text-[#264653] mb-6 text-center">Insights del Modelo Clustering</h2>
+            <img src="{{ url_for('static', filename='img/cluster.png') }}" alt="Gráfico de clusters o agrupamientos" class="w-full h-auto rounded-lg mb-4 mx-auto block">
+            <div class="text-slate-700 space-y-4">
+                <p>El clustering (agrupamiento) es una técnica de aprendizaje no supervisado que agrupa puntos de datos en clusters (grupos) basados en su similitud. En el contexto de los datos PAES, nos permite identificar perfiles de estudiantes:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Dos perfiles bien definidos:</strong> El algoritmo distingue claramente entre un grupo con alto puntaje ponderado, mejores notas y mayor ingreso, y otro con desempeño e ingresos más bajos.</li>
+                        <li><strong>Alto rendimiento y mejores condiciones:</strong> El clúster de mayor puntaje incluye estudiantes con mejor promedio de notas y puntajes en todas las pruebas, lo que refleja acceso a mejor preparación.</li>
+                        <li><strong>El ingreso familiar como factor de separación:</strong> Ingreso familiar separa los grupos: El ingreso per cápita del grupo familiar es mucho mayor en el clúster con mejor rendimiento, lo que confirma la relación directa entre nivel socioeconómico y resultados académicos.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
     </div>
 
@@ -334,8 +430,84 @@
             submitButton.disabled = false;
         }
 
+        async function renderTop7ComunasGraph() {
+            try {
+                const response = await fetch('/top_7_comunas');
+                const data = await response.json();
+
+                const comunas = data.comunas;
+                const puntajes = data.puntajes;
+
+                const plotData = [{
+                    x: comunas,
+                    y: puntajes,
+                    type: 'bar',
+                    marker: {
+                        color: colorPalette.teal
+                    },
+                    hovertemplate: '<b>%{x}</b><br>Puntaje Promedio: %{y}<extra></extra>'
+                }];
+
+                const layout = {
+                    title: {
+                        text: 'Top 7 Comunas con Mejores Puntajes PAES',
+                        font: {
+                            family: 'Inter, sans-serif',
+                            size: 20,
+                            color: colorPalette.darkBlue
+                        },
+                        y: 0.9
+                    },
+                    xaxis: {
+                        title: 'Comuna',
+                        tickangle: -45,
+                        automargin: true,
+                        tickfont: {
+                            family: 'Inter, sans-serif',
+                            size: 12,
+                            color: colorPalette.darkBlue
+                        }
+                    },
+                    yaxis: {
+                        title: 'Puntaje Promedio PAES',
+                        range: [600, 1000],
+                        tickfont: {
+                            family: 'Inter, sans-serif',
+                            size: 12,
+                            color: colorPalette.darkBlue
+                        }
+                    },
+                    margin: {
+                        l: 50,
+                        r: 50,
+                        b: 100,
+                        t: 80,
+                        pad: 4
+                    },
+                    plot_bgcolor: '#FFFFFF',
+                    paper_bgcolor: '#FFFFFF',
+                    font: {
+                        family: 'Inter, sans-serif',
+                        color: colorPalette.darkBlue
+                    }
+                };
+
+                Plotly.newPlot('grafico_top_7_comunas', plotData, layout, {responsive: true});
+
+            } catch (error) {
+                console.error('Error al cargar los datos:', error);
+            }
+        }
+
+
+
+        // Cargar las comunas y renderizar el gráfico de comunas al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTop7ComunasGraph();
+        });
+
         // Cargar las comunas al cargar la página
-        document.addEventListener('DOMContentLoaded', cargarComunasInicial);
+        //document.addEventListener('DOMContentLoaded', cargarComunasInicial);
     </script>
 
 </body>
