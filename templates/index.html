@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción de Ingreso Universitario</title>
+
+    <!-- Tailwind CSS para estilos modernos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Plotly.js para los gráficos -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- Google Fonts para una mejor tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Aplicar la fuente Inter a todo el cuerpo del documento */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Asegura que los gráficos de Plotly se redimensionen correctamente */
+        .js-plotly-plot {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-gray-800">
+
+    <!-- Contenedor principal centrado y con espaciado -->
+    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+
+        <!-- Encabezado y descripción -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#264653]">Predictor de Puntaje PAES</h1>
+            <p class="mt-2 text-md text-slate-600">Ingresa tus datos para obtener una estimación de tu puntaje promedio.</p>
+        </header>
+
+        <!-- Nuevo contenedor para el diseño de cuadrícula (formulario a la izquierda, resultados a la derecha) -->
+        <!-- En pantallas pequeñas (md) será una columna, en pantallas grandes (lg) será de tres columnas -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Tarjeta principal para el formulario (ocupa 1/3 en pantallas grandes) -->
+            <main class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg h-fit lg:col-span-1">
+                <form id="formulario" onsubmit="enviarFormulario(event)">
+                    <!-- Cuadrícula para organizar los campos del formulario -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- Campo Dependencia -->
+                        <div class="md:col-span-2">
+                            <label for="DEPENDENCIA" class="block text-sm font-semibold text-[#264653] mb-2">Dependencia del Colegio</label>
+                            <select name="DEPENDENCIA" id="DEPENDENCIA" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#2A9D8F] focus:border-[#2A9D8F] transition">
+                                <option value="1">Corporación Municipal</option>
+                                <option value="2">Municipal</option>
+                                <option value="3">Particular Subvencionado</option>
+                                <option value="4">Particular Pagado</option>
+                                <option value="5">Corporación de Administración Delegada</option>
+                                <option value="6">Servicio Local de Educación (SLE)</option>
+                            </select>
+                        </div>
+
+                        <!-- Campo Rama Educacional -->
+                        <div>
+                            <label for="RAMA_NUM" class="block text-sm font-semibold text-[#264653] mb-2">Rama Educacional</label>
+                            <select name="RAMA_NUM" id="RAMA_NUM" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#2A9D8F] focus:border-[#2A9D8F] transition">
+                                <option value="1">Humanista Científico</option>
+                                <option value="3">Técnico Profesional Comercial</option>
+                                <option value="4">Técnico Profesional Industrial</option>
+                                <option value="4">Técnico Profesional Servicios y Técnica</option>
+                                <option value="5">Técnico Profesional Agrícola</option>
+                                <option value="5">Técnico Profesional Marítima</option>
+                            </select>
+                        </div>
+
+                        <!-- Campo Promedio de Notas -->
+                        <div>
+                            <label for="PROMEDIO_NOTAS" class="block text-sm font-semibold text-[#264653] mb-2">Promedio de Notas (EM)</label>
+                            <input type="number" step="0.01" min="1.0" max="7.0" name="PROMEDIO_NOTAS" id="PROMEDIO_NOTAS" required placeholder="Ej: 6.25" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#2A9D8F] focus:border-[#2A9D8F] transition" />
+                        </div>
+
+                        <!-- Campo Comuna -->
+                        <div>
+                            <label for="comuna" class="block text-sm font-semibold text-[#264653] mb-2">Comuna de Egreso</label>
+                            <select name="COMUNA" id="comuna" onchange="cargarColegios()" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#2A9D8F] focus:border-[#2A9D8F] transition">
+                                <option value="">Selecciona una comuna</option>
+                                <!-- Las comunas se cargarán aquí desde el backend (Flask/Django) -->
+                                {% for comuna in comunas %}
+                                    <option value="{{ comuna }}">{{ comuna }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Campo Colegio -->
+                        <div>
+                            <label for="colegio" class="block text-sm font-semibold text-[#264653] mb-2">Colegio</label>
+                            <select name="COLEGIO" id="colegio" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#2A9D8F] focus:border-[#2A9D8F] transition">
+                                <option value="">Primero selecciona una comuna</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor para el botón de envío -->
+                    <div class="mt-8 text-center">
+                        <button id="submit-button" type="submit" class="w-full md:w-auto bg-[#2A9D8F] text-white font-bold py-3 px-8 rounded-lg hover:bg-[#264653] focus:outline-none focus:ring-4 focus:ring-[#E9C46A] transition-all duration-300 ease-in-out">
+                            Predecir Puntaje
+                        </button>
+                    </div>
+                </form>
+            </main>
+
+            <!-- Contenedor para mostrar los resultados y gráficos (ocupa 2/3 en pantallas grandes) -->
+            <div id="results-container" class="space-y-8 lg:col-span-2">
+                <!-- Div para el resultado del puntaje -->
+                <div id="resultado"></div>
+                <!-- Contenedor para los dos gráficos en una fila -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Divs para los gráficos (ahora con estilo de tarjeta) -->
+                    <div id="grafico_colegio" class="bg-white p-6 rounded-2xl shadow-lg min-h-[300px]"></div>
+                    <div id="grafico_top_colegios" class="bg-white p-6 rounded-2xl shadow-lg min-h-[300px]"></div>
+                </div>
+            </div>
+
+        </div> <!-- Fin del nuevo contenedor de cuadrícula -->
+
+    </div>
+
+    <script>
+        // --- Paleta de colores ---
+        const colorPalette = {
+            darkBlue: '#264653',
+            teal: '#2A9D8F',
+            yellow: '#E9C46A',
+            orange: '#F4A261',
+            redOrange: '#E76F51'
+        };
+
+        // --- Elementos del DOM ---
+        const comunaSelect = document.getElementById("comuna");
+        const colegioSelect = document.getElementById("colegio");
+        const form = document.getElementById("formulario");
+        const submitButton = document.getElementById("submit-button");
+        const resultadoDiv = document.getElementById("resultado");
+        const graficoColegioDiv = document.getElementById("grafico_colegio");
+        const graficoTopColegiosDiv = document.getElementById("grafico_top_colegios");
+
+        /**
+         * Carga dinámicamente los colegios basados en la comuna seleccionada.
+         */
+        function cargarColegios() {
+            const comuna = comunaSelect.value;
+            colegioSelect.innerHTML = '<option value="">Cargando colegios...</option>';
+            colegioSelect.disabled = true;
+
+            if (!comuna) {
+                colegioSelect.innerHTML = '<option value="">Primero selecciona una comuna</option>';
+                colegioSelect.disabled = true;
+                return;
+            }
+
+            fetch(`/get_colegios/${comuna}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('La respuesta de la red no fue exitosa');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    colegioSelect.innerHTML = '<option value="">Selecciona un colegio</option>';
+                    if (data.length === 0) {
+                        colegioSelect.innerHTML = '<option value="">No hay colegios en esta comuna</option>';
+                    } else {
+                        data.forEach(nombre => {
+                            const option = document.createElement("option");
+                            option.value = nombre;
+                            option.text = nombre;
+                            colegioSelect.appendChild(option);
+                        });
+                    }
+                    colegioSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error al cargar colegios:', error);
+                    colegioSelect.innerHTML = '<option value="">Error al cargar colegios</option>';
+                    colegioSelect.disabled = true;
+                });
+        }
+
+        /**
+         * Envía el formulario al backend para obtener la predicción.
+         * @param {Event} event - El evento de envío del formulario.
+         */
+        function enviarFormulario(event) {
+            event.preventDefault();
+
+            submitButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Prediciendo...`;
+            submitButton.disabled = true;
+
+            resultadoDiv.innerHTML = '';
+            graficoColegioDiv.innerHTML = '';
+            graficoTopColegiosDiv.innerHTML = '';
+
+            const formData = new FormData(form);
+            const datos = Object.fromEntries(formData.entries());
+
+            fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(datos)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('La respuesta de la red no fue exitosa');
+                }
+                return response.json();
+            })
+            .then(data => {
+                handleResponse(data);
+            })
+            .catch(error => {
+                console.error('Error en la predicción:', error);
+                resultadoDiv.innerHTML = `
+                    <div class="bg-red-100 border-l-4 p-4 rounded-lg shadow-md" style="border-color: ${colorPalette.redOrange}; color: #B91C1C;" role="alert">
+                        <p class="font-bold">Error de Conexión</p>
+                        <p>No se pudo conectar con el servidor para realizar la predicción. Por favor, inténtalo de nuevo más tarde.</p>
+                    </div>`;
+                submitButton.innerHTML = "Predecir Puntaje";
+                submitButton.disabled = false;
+            });
+        }
+
+        /**
+         * Procesa la respuesta del backend y muestra los resultados.
+         * @param {object} data - Los datos recibidos del backend.
+         */
+        function handleResponse(data) {
+            if (data.error) {
+                resultadoDiv.innerHTML = `
+                    <div class="bg-red-100 border-l-4 p-4 rounded-lg shadow-md" style="border-color: ${colorPalette.redOrange}; color: #B91C1C;" role="alert">
+                        <p class="font-bold">Error</p>
+                        <p>${data.error}</p>
+                    </div>`;
+            } else {
+                resultadoDiv.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+                        <h3 class="text-lg font-semibold text-[${colorPalette.darkBlue}]">Puntaje Promedio PAES Estimado</h3>
+                        <p class="text-5xl font-bold text-[${colorPalette.redOrange}] my-2">${data.puntaje}</p>
+                    </div>`;
+
+                try {
+                    const graficoColegioData = JSON.parse(data.grafico_colegio);
+                    const graficoTopData = JSON.parse(data.grafico_top_colegios);
+
+                    /**
+                     * Formatea un título de Plotly para que se muestre en dos líneas.
+                     * Intenta dividir el título después de "PAES" o en el punto medio si es muy largo.
+                     * @param {string} originalTitle - El título original del gráfico.
+                     * @returns {string} El título formateado con un salto de línea (<br>).
+                     */
+                    function formatPlotlyTitle(originalTitle) {
+                        if (!originalTitle || typeof originalTitle !== 'string') {
+                            return originalTitle;
+                        }
+                        // Intenta dividir después de la palabra "PAES"
+                        const paesIndex = originalTitle.indexOf('PAES');
+                        if (paesIndex !== -1 && paesIndex + 4 < originalTitle.length) {
+                            // Encuentra el siguiente espacio después de "PAES" para un salto limpio
+                            const nextSpaceIndex = originalTitle.indexOf(' ', paesIndex + 4);
+                            if (nextSpaceIndex !== -1) {
+                                return originalTitle.substring(0, nextSpaceIndex) + '<br>' + originalTitle.substring(nextSpaceIndex + 1);
+                            }
+                        }
+                        // Si el título es muy largo y no se encontró "PAES", intenta dividirlo por la mitad
+                        if (originalTitle.length > 30) { // Umbral arbitrario para considerar un título "largo"
+                            const middle = Math.floor(originalTitle.length / 2);
+                            let breakPoint = -1;
+
+                            // Busca un espacio cerca del medio para dividir
+                            const lastSpaceBeforeMiddle = originalTitle.lastIndexOf(' ', middle);
+                            const firstSpaceAfterMiddle = originalTitle.indexOf(' ', middle);
+
+                            if (lastSpaceBeforeMiddle !== -1 && (middle - lastSpaceBeforeMiddle) < 10) {
+                                breakPoint = lastSpaceBeforeMiddle;
+                            } else if (firstSpaceAfterMiddle !== -1 && (firstSpaceAfterMiddle - middle) < 10) {
+                                breakPoint = firstSpaceAfterMiddle;
+                            }
+
+                            if (breakPoint !== -1) {
+                                return originalTitle.substring(0, breakPoint) + '<br>' + originalTitle.substring(breakPoint + 1);
+                            }
+                        }
+                        return originalTitle; // Devuelve el título original si no se pudo formatear
+                    }
+
+                    // Aplica el formato a los títulos de los gráficos
+                    if (graficoColegioData.layout && graficoColegioData.layout.title) {
+                        if (typeof graficoColegioData.layout.title === 'string') {
+                            graficoColegioData.layout.title = formatPlotlyTitle(graficoColegioData.layout.title);
+                        } else if (typeof graficoColegioData.layout.title.text === 'string') {
+                            graficoColegioData.layout.title.text = formatPlotlyTitle(graficoColegioData.layout.title.text);
+                        }
+                    }
+
+                    if (graficoTopData.layout && graficoTopData.layout.title) {
+                        if (typeof graficoTopData.layout.title === 'string') {
+                            graficoTopData.layout.title = formatPlotlyTitle(graficoTopData.layout.title);
+                        } else if (typeof graficoTopData.layout.title.text === 'string') {
+                            graficoTopData.layout.title.text = formatPlotlyTitle(graficoTopData.layout.title.text);
+                        }
+                    }
+
+                    Plotly.newPlot('grafico_colegio', graficoColegioData.data, graficoColegioData.layout, {responsive: true});
+                    Plotly.newPlot('grafico_top_colegios', graficoTopData.data, graficoTopData.layout, {responsive: true});
+                } catch (e) {
+                    console.error("Error al parsear o renderizar los gráficos:", e);
+                    graficoColegioDiv.innerHTML = '';
+                    graficoTopColegiosDiv.innerHTML = '';
+                    resultadoDiv.innerHTML += `
+                        <div class="bg-yellow-100 border-l-4 mt-4 p-4 rounded-lg" style="border-color: ${colorPalette.yellow}; color: #A16207;" role="alert">
+                            <p>No se pudieron cargar los gráficos de resultados.</p>
+                        </div>`;
+                }
+            }
+            submitButton.innerHTML = "Predecir Puntaje";
+            submitButton.disabled = false;
+        }
+
+        // Cargar las comunas al cargar la página
+        document.addEventListener('DOMContentLoaded', cargarComunasInicial);
+    </script>
+
+</body>
+</html>
